@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>서울시 아파트 집값 예측</title>
+    <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=iwjcdy0iz3" type="text/javascript"></script>
+    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?clientId=iwjcdy0iz3D&submodules=geocoder"></script>
+
+    <!-- 합쳐지고 최소화된 최신 CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <!-- 부가적인 테마 -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <!-- 제이쿼리 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- 합쳐지고 최소화된 최신 자바스크립트 -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <style>
+        body{
+            margin: 0px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-inverse">
+        <a class="navbar-brand" href="#">House Price</a>
+    </nav>
+
+    <div id="map"></div>
+    <table class="table table-bordered">
+        <caption>기본정보</caption>
+        <tbody>
+        <tr>
+            <th scope="row" colspan="2">명칭(단지코드)</th>
+            <td th:text="|${apart.getDanjiname()}(${apart.getDanjicode()})|" colspan="2"></td>
+            <th scope="row" colspan="2">단지분류</th>
+            <td th:text="${apart.getDanjigubn()}" colspan="2"></td>
+        </tr>
+        <tr>
+            <th scope="row" colspan="2">도로명주소</th>
+            <td th:text="${apart.getDoro()}" colspan="6"></td>
+        </tr>
+
+        <tr>
+            <th scope="row" colspan="2">난방방식</th>
+            <td th:text="${apart.getNambang()}" colspan="2">test</td>
+            <th scope="row" colspan="2">세대수</th>
+            <td th:text="${apart.getSedesu()}" colspan="2"></td>
+        </tr>
+        <tr>
+            <th scope="row" colspan="2">시공사 / 시행사</th>
+            <td th:text="|${apart.getSigog()} / ${apart.getSiheg()}|" colspan="2">test</td>
+        </tr>
+        <tr>
+            <th scope="row" colspan="8" >시설관리</th>
+        </tr>
+        <tr>
+            <th scope="col">음식물처리방식</th>
+            <th scope="col">급수방식</th>
+            <th scope="col">주차관리</th>
+            <th scope="col">일반관리인원</th>
+            <th scope="col">경비관리인원</th>
+            <th scope="col">청소관리인원</th>
+            <th scope="col">주차대수(지상/지하)</th>
+            <th scope="col">cctv대수</th>
+
+        </tr>
+        <tr>
+            <td th:text="${apart.getFood()}"></td>
+            <td th:text="${apart.getWater()}"></td>
+            <td th:text="${apart.getGucha()}"></td>
+            <td th:text="${apart.getEill()}"></td>
+            <td th:text="${apart.getGuard()}"></td>
+            <td th:text="${apart.getClean()}"></td>
+            <td th:text="|${apart.getGisa()}/${apart.getGiha()}|"></td>
+            <td th:text="${apart.getCctv()}"></td>
+        </tr>
+        </tbody>
+    </table>
+</body>
+<script th:inline="javascript">
+
+    let addr = [[${apart.getDoro()}]] ;
+    naver.maps.Service.geocode({
+        address: addr
+    }, function(status, response) {
+        if (status !== naver.maps.Service.Status.OK) {
+            return alert('Something wrong!');
+        }
+
+        let result = response.result.items[0].point; // 검색 결과의 컨테이너
+        let pos = new naver.maps.LatLng(result.y, result.x)
+        let map = new naver.maps.Map('map', {
+            zoom: 16,
+            size : new naver.maps.Size(window.innerWidth - 20,window.innerHeight - 200),
+            center : pos
+        });
+
+        let marker = new naver.maps.Marker({
+            position: pos,
+            map: map
+        });
+    });
+
+</script>
+</html>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hjBrain.demo.model.dao.DataMapper">
+
+    <select id="getAllDataList" resultType="com.hjBrain.demo.model.dto.ApartmentInfo">
+        SELECT * FROM house_info
+        limit 10;
+    </select>
+    
+    <select id="getGuName" resultType="com.hjBrain.demo.model.dto.GuName">
+        SELECT * FROM gu_names;
+    </select>
+
+    <select id="getSidoName" resultType="com.hjBrain.demo.model.dto.SidoName">
+        SELECT * FROM sido_names;
+    </select>
+
+    <select id="bestRecommendedData" resultType="com.hjBrain.demo.model.dto.ApartmentInfo"
+            parameterType="com.hjBrain.demo.controller.InputForm">
+        SELECT a.*
+        FROM house_info a,
+            (SELECT n.doro
+             FROM (SELECT *
+                    FROM zdata_amen
+                    WHERE #{amenities} &lt; amenitiesCnt) n,
+                (SELECT doro
+                FROM zdata_hospital
+                WHERE #{hospital} &lt; hospital) m,
+                (SELECT doro
+                FROM zdata_market
+                WHERE #{market} &lt; market) j
+            WHERE n.doro = m.doro AND m.doro = j.doro) b
+        WHERE b.doro = a.doro and b.doro like CONCAT('%',#{gu},'%')
+    </select>
+    <select id="getInfoByDanjicode" resultType="com.hjBrain.demo.model.dto.ApartmentInfo">
+        SELECT *
+        FROM house_info
+        WHERE danjicode = #{danjicode}
+    </select>
+
+</mapper>
